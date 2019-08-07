@@ -1,0 +1,15 @@
+# springcloud 配置文件
+#spring:
+#  application:
+#    name: template
+#  # 配置中心
+#  cloud:
+#    config:
+#      discovery:
+#        service-id: springcloud-config    # 配置中心注册名称 默认去{label}节点读取order-{profile}.yml文件
+#        enabled: true
+#      # 后缀 dev|prod
+#      profile: dev
+#      # dev|master分支，建议使用它区分生产、测试环境
+#      label: dev
+

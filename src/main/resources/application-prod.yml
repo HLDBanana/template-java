@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://10.4.237.111:3306/hanergy_system?useUnicode=true&characterEncoding=utf-8
+    username: ycroot
+    password: hnyc1!
+  redis:
+    open: false
+    host: 10.4.237.114
+    port: 6379
+    password: bgredis!
+system:
+  standard: http://bgs.hanergy.com/standard/api/v1/dicationary/doRefreshRedis?refresh={0}
+  checkPassWord: true

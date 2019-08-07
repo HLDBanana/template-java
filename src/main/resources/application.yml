@@ -1,0 +1,82 @@
+# Tomcat
+server:
+  tomcat:
+    uri-encoding: UTF-8
+    max-threads: 1000
+    min-spare-threads: 30
+  port: 8083
+  connection-timeout: 5000ms
+
+
+spring:
+  # 环境 dev|test|prod
+  profiles:
+    active: dev
+  # jackson时间格式化
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+      enabled: true
+  mvc:
+    throw-exception-if-no-handler-found: true
+    static-path-pattern: /static/**
+  resources:
+    add-mappings: false
+  activiti:
+    process-definition-location-prefix:  classpath:/processes
+    database-schema-update: true
+    async-executor-activate: true
+    #    database-schema: hanergy_activiti
+    history-level: full
+    check-process-definitions: false
+
+#mybatis
+mybatis-plus:
+  mapper-locations: classpath:mapper/**/*.xml
+  #实体扫描，多个package用逗号或者分号分隔
+  typeAliasesPackage: com.hanergy.modules.*.entity
+  global-config:
+    #自定义SQL注入器
+    db-config:
+      #主键类型  0:"数据库ID自增", 1:"用户输入ID",2:"全局唯一ID (数字类型唯一ID)", 3:"全局唯一ID UUID";
+      id-type: input
+      #字段策略 0:"忽略判断",1:"非 NULL 判断"),2:"非空判断"
+      field-strategy: NOT_NULL
+      #逻辑删除配置
+      logic-delete-value: -1
+      logic-not-delete-value: 0
+    #刷新mapper 调试神器
+    refresh: true
+  #    sql-injector: com.baomidou.mybatisplus.mapper.LogicSqlInjector
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+    call-setters-on-nulls: true
+
+hanergy:
+  redis:
+    open: false
+  shiro:
+    redis: false
+  # APP模块，是通过jwt认证的，如果要使用APP模块，则需要修改【加密秘钥】
+  jwt:
+    # 加密秘钥
+    secret: f4e2e52034348f86b67cde581c0f9eb5[www.hanergy.com]
+    # token有效时长，7天，单位秒
+    expire: 604800
+    header: token
+logging:
+  level:
+    org.springframework.boot.autoconfigure: ERROR
+    com.hanergy.activiti.data: debug
+      ## 去掉CONDITIONS EVALUATION REPORT日志打印
+    io.swagger.models.parameters.AbstractSerializableParameter: error
+
+project:
+  background-system:
+    ## 文件服务器域名
+    staticUrl: http://10.4.237.42:8080/

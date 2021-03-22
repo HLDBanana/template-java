@@ -2,11 +2,7 @@
 server:
   tomcat:
     uri-encoding: UTF-8
-    max-threads: 1000
-    min-spare-threads: 30
   port: 8083
-  connection-timeout: 5000ms
-
 
 spring:
   # 环境 dev|test|prod
@@ -26,13 +22,8 @@ spring:
     static-path-pattern: /static/**
   resources:
     add-mappings: false
-  activiti:
-    process-definition-location-prefix:  classpath:/processes
-    database-schema-update: true
-    async-executor-activate: true
-    #    database-schema: hanergy_activiti
-    history-level: full
-    check-process-definitions: false
+  application:
+    name: hanergy
 
 #mybatis
 mybatis-plus:
@@ -57,26 +48,8 @@ mybatis-plus:
     cache-enabled: false
     call-setters-on-nulls: true
 
-hanergy:
-  redis:
-    open: false
-  shiro:
-    redis: false
-  # APP模块，是通过jwt认证的，如果要使用APP模块，则需要修改【加密秘钥】
-  jwt:
-    # 加密秘钥
-    secret: f4e2e52034348f86b67cde581c0f9eb5[www.hanergy.com]
-    # token有效时长，7天，单位秒
-    expire: 604800
-    header: token
 logging:
   level:
     org.springframework.boot.autoconfigure: ERROR
-    com.hanergy.activiti.data: debug
       ## 去掉CONDITIONS EVALUATION REPORT日志打印
     io.swagger.models.parameters.AbstractSerializableParameter: error
-
-project:
-  background-system:
-    ## 文件服务器域名
-    staticUrl: http://10.4.237.42:8080/

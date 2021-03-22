@@ -1,21 +1,89 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration>
-    <include resource="org/springframework/boot/logging/logback/base.xml" />
-    <logger name="org.springframework.web" level="INFO"/>
-    <logger name="org.springboot.sample" level="TRACE" />
+<configuration scan="true" scanPeriod="10 second" debug="false">
+    <!--    <include resource="org/springframework/boot/logging/logback/base.xml" />-->
+    <!--定义生产日志存放的位置-->
+    <springProperty scope="context" name="LOG_PATH" source="log.path"
+                    defaultValue="/root/dataMiddle/logs"/>
+    <!--定义测试日志存放的位置-->
+    <springProperty scope="context" name="TestLOG_PATH" source="testlog.path"
+                    defaultValue="/root/dataMiddle/logs"/>
+    <!--获取spring 配置中的 spring.application.name-->
+    <springProperty scope="context" name="APPLICATION_NAME" source="spring.application.name"/>
 
-    <!-- 开发、测试环境 -->
-    <springProfile name="dev,test">
-        <logger name="org.springframework.web" level="INFO"/>
-        <logger name="org.springboot.sample" level="INFO" />
-        <logger name="com.hanergy" level="DEBUG" />
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yy-MM-dd.HH:mm:ss.SSS} [%-16t] %-5p %-22c{0}  %M %line - %m%n</pattern>
+        </encoder>
+    </appender>
+
+    <!--本地开发-->
+    <springProfile name="default,dev">
+        <!--        <logger name="org.springframework" level="DEBUG"/>-->
+        <logger name="com.hanergy.out" level="DEBUG"/>
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
+
+    <!-- 测试、准生产 -->
+    <springProfile name="test,stage,dev">
+        <logger name="com.hanergy.out" level="INFO"/>
+        <logger name="com.mysql" level="INFO"/>
+        <logger name="com.alibaba" level="INFO"/>
+        <logger name="org.apache.commons" level="INFO"/>
+        <logger name="org.apache.xmlbeans" level="INFO"/>
+        <logger name="org.springframework" level="INFO"/>
+        <appender name="FILE" class= "ch.qos.logback.core.rolling.RollingFileAppender">
+            <encoder>
+                <pattern>%d{yy-MM-dd.HH:mm:ss.SSS} [%-16t] %-5p %-22c{0} - %m%n</pattern>
+            </encoder>
+            <prudent>true</prudent>
+            <!-- 按天来回滚，如果需要按小时来回滚，则设置为{yyyy-MM-dd_HH} -->
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>${TestLOG_PATH}/${APPLICATION_NAME}.%i.log.%d{yyyyMMdd}</fileNamePattern>
+                <!-- 如果按天来回滚，则最大保存时间为1天，1天之前的都将被清理掉 -->
+                <maxHistory>7</maxHistory>
+                <!-- 按时间回滚的同时，按文件大小来回滚 -->
+                <timeBasedFileNamingAndTriggeringPolicy
+                        class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                    <maxFileSize>100MB</maxFileSize>
+                </timeBasedFileNamingAndTriggeringPolicy>
+            </rollingPolicy>
+        </appender>
+        <root level="INFO">
+            <appender-ref ref="FILE"/>
+            <appender-ref ref="CONSOLE"/>
+        </root>
     </springProfile>
 
     <!-- 生产环境 -->
     <springProfile name="prod">
-        <logger name="org.springframework.web" level="INFO"/>
-        <logger name="org.springboot.sample" level="INFO" />
-        <logger name="com.hanergy" level="INFO" />
+        <logger name="com.hanergy.out" level="ERROR"/>
+        <logger name="com.mysql" level="ERROR"/>
+        <logger name="com.alibaba" level="ERROR"/>
+        <logger name="org.apache.commons" level="ERROR"/>
+        <logger name="org.apache.xmlbeans" level="ERROR"/>
+        <logger name="org.springframework" level="ERROR"/>
+        <appender name="FILE" class= "ch.qos.logback.core.rolling.RollingFileAppender">
+            <encoder>
+                <pattern>%d{yy-MM-dd.HH:mm:ss.SSS} [%-16t] %-5p %-22c{0} - %m%n</pattern>
+            </encoder>
+            <prudent>true</prudent>
+            <!-- 按天来回滚，如果需要按小时来回滚，则设置为{yyyy-MM-dd_HH} -->
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>${LOG_PATH}/${APPLICATION_NAME}.%i.log.%d{yyyyMMdd}</fileNamePattern>
+                <!-- 如果按天来回滚，则最大保存时间为1天，1天之前的都将被清理掉 -->
+                <maxHistory>7</maxHistory>
+                <!-- 按时间回滚的同时，按文件大小来回滚 -->
+                <timeBasedFileNamingAndTriggeringPolicy
+                        class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                    <maxFileSize>100MB</maxFileSize>
+                </timeBasedFileNamingAndTriggeringPolicy>
+            </rollingPolicy>
+        </appender>
+        <root level="ERROR">
+            <appender-ref ref="FILE"/>
+        </root>
     </springProfile>
 
 </configuration>

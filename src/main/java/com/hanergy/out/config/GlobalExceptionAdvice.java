@@ -1,10 +1,9 @@
 package com.hanergy.out.config;
 
 import com.hanergy.out.common.DmStatus;
-import com.hanergy.out.common.RetResult;
+import com.hanergy.out.common.HttpResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -21,6 +20,7 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import javax.validation.ConstraintViolationException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -40,9 +40,9 @@ public class GlobalExceptionAdvice {
      */
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public RetResult<Object> sendErrorResponse(Exception exception){
+    public HttpResult<Object> sendErrorResponse(Exception exception){
         log.error("后台服务异常: {}", getStackTrace(exception));
-        return new RetResult<>(DmStatus.INTERNAL_ERROR,exception.getLocalizedMessage());
+        return HttpResult.failureResult(DmStatus.INTERNAL_ERROR.getHttpStatus().value(),exception.getLocalizedMessage());
     }
 
     /**
@@ -52,9 +52,9 @@ public class GlobalExceptionAdvice {
      */
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public RetResult<Object> sendErrorResponse(RuntimeException exception){
+    public HttpResult<Object> sendErrorResponse(RuntimeException exception){
         log.error("系统运行时异常: {}", getStackTrace(exception));
-        return new RetResult<>(DmStatus.SYS_RUNTIME_ERROR,exception.getLocalizedMessage());
+        return HttpResult.failureResult(DmStatus.SYS_RUNTIME_ERROR.getHttpStatus().value(),exception.getLocalizedMessage());
     }
     /**
      * 单个参数校验（没有绑定对象）
@@ -63,9 +63,9 @@ public class GlobalExceptionAdvice {
      */
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public RetResult<Object> otherValidException(ConstraintViolationException e) {
+    public HttpResult<Object> otherValidException(ConstraintViolationException e) {
         log.error("参数校验异常: {}", getStackTrace(e));
-        return new RetResult<>(DmStatus.CONSTRAINT_VIOLATION_ERROR,e.getLocalizedMessage());
+        return HttpResult.failureResult(DmStatus.CONSTRAINT_VIOLATION_ERROR.getHttpStatus().value(),e.getLocalizedMessage());
     }
     /**
      * 必填参数缺失
@@ -74,9 +74,9 @@ public class GlobalExceptionAdvice {
      */
     @ExceptionHandler(ServletRequestBindingException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public RetResult<Object> servletRequestBinding(ServletRequestBindingException e) {
+    public HttpResult<Object> servletRequestBinding(ServletRequestBindingException e) {
         log.error("必填参数缺失异常: {}", getStackTrace(e));
-        return new RetResult<>(DmStatus.SERVLET_REQUEST_BINDING_ERROR,e.getLocalizedMessage());
+        return HttpResult.failureResult(DmStatus.SERVLET_REQUEST_BINDING_ERROR.getHttpStatus().value(),e.getLocalizedMessage());
     }
 
     /**
@@ -86,7 +86,7 @@ public class GlobalExceptionAdvice {
      */
     @ExceptionHandler({MethodArgumentNotValidException.class, BindException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public RetResult<Object> handleException(Exception e) {
+    public HttpResult<Object> handleException(Exception e) {
         StringBuilder errorMsg = new StringBuilder();
         if (e instanceof MethodArgumentNotValidException) {
             MethodArgumentNotValidException validException = (MethodArgumentNotValidException) e;
@@ -106,25 +106,25 @@ public class GlobalExceptionAdvice {
             }
         }
         log.error("参数校验异常: {}", getStackTrace(e));
-        return new RetResult<>(DmStatus.PARAM_IS_INVALID,errorMsg.toString());
+        return HttpResult.failureResult(DmStatus.PARAM_IS_INVALID.getHttpStatus().value(),errorMsg.toString());
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
-    public RetResult<Object> sendErrorResponse(HttpRequestMethodNotSupportedException exception){
+    public HttpResult<Object> sendErrorResponse(HttpRequestMethodNotSupportedException exception){
         log.error("http方法不允许: {}", getStackTrace(exception));
-        return new RetResult<>(DmStatus.HTTP_METHOD_NOT_ALLOW_ERROR,exception.getSupportedMethods());
+        return HttpResult.failureResult(DmStatus.HTTP_METHOD_NOT_ALLOW_ERROR.getHttpStatus().value(), Arrays.toString(exception.getSupportedMethods()));
     }
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
     @ResponseStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
-    public RetResult<Object> sendErrorResponse(HttpMediaTypeNotSupportedException exception){
-        return new RetResult<>(DmStatus.HTTP_MEDIA_TYPE_NOT_SUPPORTED_ERROR);
+    public HttpResult<Object> sendErrorResponse(HttpMediaTypeNotSupportedException exception){
+        return HttpResult.failureResult(DmStatus.HTTP_MEDIA_TYPE_NOT_SUPPORTED_ERROR.getHttpStatus().value(),exception.getLocalizedMessage());
     }
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public RetResult<Object> sendErrorResponse(MaxUploadSizeExceededException exception){
-        return new RetResult<>(DmStatus.MAX_UPLOAD_SIZE_EXCEEDED);
+    public HttpResult<Object> sendErrorResponse(MaxUploadSizeExceededException exception){
+        return HttpResult.failureResult(DmStatus.MAX_UPLOAD_SIZE_EXCEEDED.getHttpStatus().value(),exception.getLocalizedMessage());
     }
 
     public static String getStackTrace(Throwable throwable) {

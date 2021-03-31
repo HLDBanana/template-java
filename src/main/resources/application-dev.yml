@@ -50,6 +50,11 @@ feign:
     enabled: false
   okhttp:
     enabled: true
+  client:
+    config:
+      default:
+        connectTimeout: 10000 #链接超时
+        readTimeout: 10000    #读超时
 
 hystrix:
   command:

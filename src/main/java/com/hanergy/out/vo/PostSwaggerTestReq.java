@@ -16,11 +16,11 @@ import javax.validation.constraints.NotNull;
 @ApiModel("请求bean")
 public class PostSwaggerTestReq {
 
-    @NotNull
+    @NotNull(message = "pageNo不能为空")
     @ApiModelProperty(value ="当前页号" , example = "1" , required = true)
     private Integer pageNo;
 
-    @NotNull
+    @NotNull(message = "pageSize不能为空")
     @ApiModelProperty(value ="每页数量" , example = "15" , required = true)
     private Integer pageSize;
 

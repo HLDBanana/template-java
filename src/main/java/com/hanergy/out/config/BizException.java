@@ -2,6 +2,7 @@ package com.hanergy.out.config;
 
 
 import com.hanergy.out.common.CommonEnum;
+import lombok.Data;
 
 /**
  * @description: 异常
@@ -9,6 +10,7 @@ import com.hanergy.out.common.CommonEnum;
  * @create: 2020/3/24 13:09
  * @update: 2020/3/24 13:09
  */
+@Data
 public class BizException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
@@ -53,28 +55,6 @@ public class BizException extends RuntimeException {
         super(String.valueOf(errorCode), cause);
         this.errorCode = errorCode;
         this.errorMsg = errorMsg;
-    }
-
-
-    public int getErrorCode() {
-        return errorCode;
-    }
-
-    public void setErrorCode(int errorCode) {
-        this.errorCode = errorCode;
-    }
-
-    public String getErrorMsg() {
-        return errorMsg;
-    }
-
-    public void setErrorMsg(String errorMsg) {
-        this.errorMsg = errorMsg;
-    }
-
-    @Override
-    public String getMessage() {
-        return errorMsg;
     }
 
     @Override
